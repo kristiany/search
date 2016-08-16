@@ -34,7 +34,6 @@ func main() {
 		}
 		i.AddToIndex(filename, string(bytes))
 	}
-  //fmt.Printf("DEBUG %s", i.String())
 	searchMode(i)
 }
 

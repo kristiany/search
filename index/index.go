@@ -11,7 +11,7 @@ type Index struct {
 
 type Result struct {
 	Filename string
-	Score    float64
+	Score    int
 }
 
 func New() *Index {
@@ -29,14 +29,16 @@ func (i *Index) AddToIndex(name string, content string) {
 func (i *Index) Search(words []string) []Result {
 	var result = make([]Result, 0)
 	for filename, collection := range i.content {
-		var score = 0.0
+		var score = 0
 		for _, word := range words {
 			kvi := collection.PrefixFind([]byte(word))
-			for _, value, next := kvi(); next != nil; _, value, next = next() {
-				score += value.(float64)
+			key, _, _ := kvi()
+			if key != nil { // We just care about any hit
+				score += 1
 			}
 		}
-		result = append(result, Result { Filename: filename, Score: score})
+		var normalized = score * 100 / len(words)
+		result = append(result, Result { Filename: filename, Score: normalized})
 	}
 	return result
 }
