@@ -3,7 +3,7 @@ package index
 import (
 	"github.com/timtadh/data-structures/trie"
 	"strings"
-  "sort"
+	"sort"
 )
 
 type Index struct {
@@ -39,14 +39,21 @@ func (i *Index) Search(words []string) []Result {
 			}
 		}
 		var normalized = score * 100 / len(words)
-		result = append(result, Result { Filename: filename, Score: normalized})
+		result = append(result, Result{Filename: filename, Score: normalized})
 	}
-  sort.Sort(result)
-	return result
+	sort.Sort(result)
+	return limit(result, 10)
+}
+
+func limit(rs Results, i int) Results {
+	if len(rs) < i {
+		return rs
+	}
+	return rs[:i]
 }
 
 func cleanup(word string) string {
-  return strings.ToLower(word)
+	return strings.ToLower(word)
 }
 
 func (i *Index) String() string {
@@ -58,13 +65,13 @@ func (i *Index) String() string {
 }
 
 func (slice Results) Len() int {
-    return len(slice)
+	return len(slice)
 }
 
 func (slice Results) Less(i, j int) bool {
-    return slice[i].Score > slice[j].Score;
+	return slice[i].Score > slice[j].Score;
 }
 
 func (slice Results) Swap(i, j int) {
-    slice[i], slice[j] = slice[j], slice[i]
+	slice[i], slice[j] = slice[j], slice[i]
 }
