@@ -3,6 +3,7 @@ package index
 import (
 	"github.com/timtadh/data-structures/trie"
 	"strings"
+  "sort"
 )
 
 type Index struct {
@@ -13,6 +14,8 @@ type Result struct {
 	Filename string
 	Score    int
 }
+
+type Results []Result
 
 func New() *Index {
 	return &Index{content: make(map[string]*trie.TST) }
@@ -27,7 +30,7 @@ func (i *Index) AddToIndex(name string, content string) {
 }
 
 func (i *Index) Search(words []string) []Result {
-	var result = make([]Result, 0)
+	var result = make(Results, 0)
 	for filename, collection := range i.content {
 		var score = 0
 		for _, word := range words {
@@ -38,6 +41,7 @@ func (i *Index) Search(words []string) []Result {
 		var normalized = score * 100 / len(words)
 		result = append(result, Result { Filename: filename, Score: normalized})
 	}
+  sort.Sort(result)
 	return result
 }
 
@@ -51,4 +55,16 @@ func (i *Index) String() string {
 		result += key + ":" + value.String() + "\n"
 	}
 	return result
+}
+
+func (slice Results) Len() int {
+    return len(slice)
+}
+
+func (slice Results) Less(i, j int) bool {
+    return slice[i].Score > slice[j].Score;
+}
+
+func (slice Results) Swap(i, j int) {
+    slice[i], slice[j] = slice[j], slice[i]
 }
