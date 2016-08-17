@@ -21,7 +21,7 @@ func New() *Index {
 func (i *Index) AddToIndex(name string, content string) {
 	var root = trie.New()
 	for _, word := range strings.Fields(content) {
-		root.Put([]byte(word), 1.0)
+		root.Put([]byte(cleanup(word)), 1.0)
 	}
 	i.content[name] = root
 }
@@ -31,9 +31,7 @@ func (i *Index) Search(words []string) []Result {
 	for filename, collection := range i.content {
 		var score = 0
 		for _, word := range words {
-			kvi := collection.PrefixFind([]byte(word))
-			key, _, _ := kvi()
-			if key != nil { // We just care about any hit
+			if collection.Has([]byte(cleanup(word))) {
 				score += 1
 			}
 		}
@@ -41,6 +39,10 @@ func (i *Index) Search(words []string) []Result {
 		result = append(result, Result { Filename: filename, Score: normalized})
 	}
 	return result
+}
+
+func cleanup(word string) string {
+  return strings.ToLower(word)
 }
 
 func (i *Index) String() string {
